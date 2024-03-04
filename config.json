@@ -1,0 +1,14 @@
+[
+    {
+        "repoUrl": "https://github.com/wearablecomputing/wearing_sound",
+        "branch": "main"
+    },
+    {
+        "repoUrl": "https://github.com/wearablecomputing/stitch_data",
+        "branch": "main"
+    },
+    {
+        "repoUrl": "https://github.com/wearablecomputing/optical-pleat-sensor",
+        "branch": "main"
+    }
+]

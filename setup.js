@@ -6,29 +6,31 @@ const fs = require('fs');
 const repoFolderName = 'repositories'; // Name of the folder where repositories will be cloned
 
 let directory;
-let repoUrls = ['https://github.com/wearablecomputing/wearing_sound', 'https://github.com/wearablecomputing/optical-pleat-sensor'];
+let repos = {}; // Changed from repoUrls array to repos dictionary
 
+// Function to read a json file and set repos from the json
+function readJsonFile(file) {
+    let json = JSON.parse(fs.readFileSync(file, 'utf8'));
+    json.forEach(item => {
+        repos[item.repoUrl] = item.branch; // Store repoUrl as key and branch as value
+    });
+    Max.post('Repos: ' + JSON.stringify(repos));
+}
+
+readJsonFile('config.json');
 
 // Function to check if repositories already exist in the specified directory
-function checkReposExist(dir, repoUrls) {
-
+function checkReposExist(dir) {
     setDirectory(dir);
     Max.post('Checking repositories in ' + directory + '...');
-
 
     if (!directory) {
         Max.outlet('error', 'Directory is not set. Please set the directory first.');
         return;
     }
 
-    if (!Array.isArray(repoUrls)) {
-        repoUrls = [repoUrls];
-        Max.post('RepoUrls is not an array')
-    }
-
-    // Check each repository URL
-    for (const repoUrl of repoUrls) {
-        Max.post("In loop")
+    Object.keys(repos).forEach(repoUrl => { // Iterate over dictionary keys (repoUrls)
+        Max.post("In loop");
         const repoName = new URL(repoUrl).pathname.split('/').pop().replace('.git', '');
         const repoDirectory = path.join(directory, repoFolderName, repoName);
 
@@ -40,7 +42,7 @@ function checkReposExist(dir, repoUrls) {
             Max.outlet('info', `Repository ${repoName} does not exist and can be cloned.`);
             Max.outlet('info', 'status', 'clone');
         }
-    }
+    });
 }
 
 function setDirectory(dir) {
@@ -50,99 +52,84 @@ function setDirectory(dir) {
 }
 
 Max.addHandler('checkRepos', (folderPath) => {
-    checkReposExist(folderPath, repoUrls);
+    Max.post('Checking repositories in ' + folderPath + '...');
+    checkReposExist(folderPath);
 });
 
-Max.addHandler('setDir', (dir) => {
+Max.addHandler('setDirectory', (dir) => {
     setDirectory(dir);
 });
 
-Max.addHandler('setRepos', (...urls) => {
-    repoUrls = urls;
-    Max.outlet('success', 'Repositories set to ' + repoUrls.join(', '));
-});
 
-// This handler will listen for messages from Max
-Max.addHandler('clone', async (...urls) => {
-    let count = 0;
+// Function to clone repositories
+function cloneRepos(dir) {
+    Max.post('Cloning repositories in ' + directory + '...');
+
+
     if (!directory) {
-        Max.outlet('error', 'Directory is not set. Use "setDir [path]" message to set directory.');
+        Max.outlet('error', 'Directory is not set. Please set the directory first.');
         return;
     }
 
-    if (!Array.isArray(repoUrls)) {
-        repoUrls = [repoUrls];
-    }
+    Object.keys(repos).forEach(repoUrl => { // Iterate over dictionary keys (repoUrls)
+        const repoName = new URL(repoUrl).pathname.split('/').pop().replace('.git', '');
+        const repoDirectory = path.join(directory, repoFolderName, repoName);
 
-    Max.outlet('clone', 'count', repoUrls.length);
-
-    for (const repoUrl of repoUrls) {
-        try {
-            count++;
-            const repoName = new URL(repoUrl).pathname.split('/').pop().replace('.git', '');
-            const repoDirectory = path.join(directory, repoFolderName, repoName);
-            const stage = `${count}/${repoUrls.length}`;
-
-            Max.outlet('clone', 'status', 'stage', stage);
-            Max.outlet('info', 'Cloning repository ' + repoUrl + ' to ' + repoDirectory);
-            Max.outlet('clone', 'repo', repoName);
-
-            const git = simpleGit({
-                progress({ progress }) {
-                    Max.outlet('clone', 'progress', progress);
-                },
+        // Check if the repository directory exists
+        if (fs.existsSync(repoDirectory)) {
+            Max.outlet('info', `Repository ${repoName} already exists in ${repoDirectory}.`);
+            Max.outlet('info', 'status', 'pull');
+            git
+        } else {
+            git.clone(repoUrl, repoDirectory, (err, data) => {
+                if (err) {
+                    Max.outlet('error', `Error cloning repository ${repoName}: ${err}`);
+                } else {
+                    git.checkoutLocalBranch(repos[repoUrl], (err, data) => {
+                        if (err) {
+                            Max.outlet('error', `Error checking out branch ${repos[repoUrl]}: ${err}`);
+                        } else {
+                            Max.outlet('success', `Branch ${repoName} checked out successfully.`);
+                        }
+                    });
+                    Max.outlet('success', `Repository ${repoName} cloned successfully.`);
+                }
             });
-
-            // Clone the repository with submodules
-            await git.clone(repoUrl, repoDirectory, ['--recurse-submodules']);
-            Max.outlet('clone', 'success', 'Repository cloned successfully to ' + repoDirectory + repoName);
-            Max.outlet('clone', 'status', 'done');
-        } catch (err) {
-            Max.outlet('error', 'Failed to clone repository: ' + err.message);
-            break;
+            Max.outlet('info', `Repository ${repoName} does not exist and can be cloned.`);
+            Max.outlet('info', 'status', 'clone');
         }
-    }
+    });
+}
+
+Max.addHandler('clone', (folderPath) => {
+    cloneRepos(folderPath);
 });
 
-Max.addHandler('pull', async () => {
-    let count = 0;
+// Function to pull repositories
+function pullRepos(dir) {
+    Max.post('Pulling repositories in ' + directory + '...');
+
     if (!directory) {
-        Max.outlet('error', 'Directory is not set. Use "setDir [path]" message to set directory.');
+        Max.outlet('error', 'Directory is not set. Please set the directory first.');
         return;
     }
 
-    Max.outlet('pull', 'count', repoUrls.length);
+    Object.keys(repos).forEach(repoUrl => { // Iterate over dictionary keys (repoUrls)
+        const repoName = new URL(repoUrl).pathname.split('/').pop().replace('.git', '');
+        const repoDirectory = path.join(directory, repoFolderName, repoName);
 
-    for (const repoUrl of repoUrls) {
-        try {
-            count++;
-            const repoName = new URL(repoUrl).pathname.split('/').pop().replace('.git', '');
-            const repoDirectory = path.join(directory, repoFolderName, repoName);
-
-            Max.post('repoDirectory', repoDirectory)
-            const stage = `${count}/${repoUrls.length}`;
-
-            Max.outlet('pull', 'status', 'stage', stage);
-            Max.outlet('info', 'Pulling repository ' + repoUrl + ' in ' + repoDirectory);
-            Max.outlet('pull', 'repo', repoName);
-
-            const git = simpleGit({
-                baseDir: repoDirectory,
-                progress({ progress }) {
-                    Max.outlet('pull', 'progress', progress);
-                },
-            });
-
-            // Pull the repository and update submodules
-            await git.pull();
-            // await git.submoduleUpdate(['--init', '--recursive']);
-            Max.outlet('pull', 'success', 'Repository pulled and submodules updated successfully in ' + repoDirectory);
-            Max.outlet('pull', 'status', 'done');
+        // Check if the repository directory exists
+        if (fs.existsSync(repoDirectory)) {
+            Max.outlet('info', `Repository ${repoName} already exists in ${repoDirectory}.`);
+            Max.outlet('info', 'status', 'pull');
+        } else {
+            Max.outlet('info', `Repository ${repoName} does not exist and can be cloned.`);
+            Max.outlet('info', 'status', 'clone');
         }
-        catch (err) {
-            Max.outlet('error', 'Failed to pull repository: ' + err.message);
-        }
-    }
+    });
+}
 
-    Max.outlet('ready', 'Script is ready to clone repositories. Send "clone [repoUrls]" message to start.');
+Max.addHandler('pull', (folderPath) => {
+    pullRepos(folderPath);
 });
+
