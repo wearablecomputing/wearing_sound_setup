@@ -3,14 +3,14 @@
 		"fileversion" : 1,
 		"appversion" : 		{
 			"major" : 8,
-			"minor" : 5,
-			"revision" : 6,
+			"minor" : 6,
+			"revision" : 0,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 34.0, 85.0, 1557.0, 905.0 ],
+		"rect" : [ 34.0, 76.0, 1433.0, 843.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -40,6 +40,36 @@
 		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
+					"id" : "obj-16",
+					"linecount" : 4,
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 635.0, 633.0, 150.0, 74.0 ],
+					"presentation" : 1,
+					"presentation_linecount" : 4,
+					"presentation_rect" : [ 635.0, 633.0, 150.0, 74.0 ],
+					"text" : "wearing sound\ngimlet\nodot\nmodosc\n"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-11",
+					"linecount" : 9,
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 514.0, 446.0, 151.0, 127.0 ],
+					"presentation" : 1,
+					"presentation_linecount" : 9,
+					"presentation_rect" : [ 514.0, 446.0, 151.0, 127.0 ],
+					"text" : "- specify branch\n- add folder to max search path\n- sort out bangs\n- config file for repos\n- default installation path\n- function for downloading github release\n- "
+				}
+
+			}
+, 			{
+				"box" : 				{
 					"id" : "obj-132",
 					"maxclass" : "message",
 					"numinlets" : 2,
@@ -65,13 +95,13 @@
 , 			{
 				"box" : 				{
 					"id" : "obj-120",
-					"linecount" : 8,
+					"linecount" : 3,
 					"maxclass" : "message",
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 592.0, 396.993869308233343, 50.0, 119.0 ],
-					"text" : "text C:/Users/b-her/Desktop/wc.setup_wearing_sound/"
+					"patching_rect" : [ 528.048793077468872, 369.254907608032227, 115.853661298751831, 49.0 ],
+					"text" : "text C:/Users/b-her/Desktop/"
 				}
 
 			}
@@ -83,7 +113,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 670.338999032974243, 366.101703643798828, 50.0, 22.0 ],
-					"text" : "1"
+					"text" : "3"
 				}
 
 			}
@@ -326,7 +356,7 @@
 					"numinlets" : 3,
 					"numoutlets" : 3,
 					"outlettype" : [ "", "", "" ],
-					"patching_rect" : [ 1098.816863467693338, 713.335361499786359, 79.5, 36.0 ],
+					"patching_rect" : [ 1165.853686332702637, 671.279295136928567, 81.0, 35.0 ],
 					"text" : "route Update Install"
 				}
 
@@ -338,7 +368,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1078.477879931926736, 637.799095690250397, 50.0, 22.0 ],
+					"patching_rect" : [ 1082.926855087280273, 703.6585533618927, 50.0, 22.0 ],
 					"text" : "Install"
 				}
 
@@ -355,11 +385,11 @@
 					"numoutlets" : 3,
 					"outlettype" : [ "", "", "int" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 1098.816863467693338, 531.913566648960114, 50.330497760108642, 47.843137502670288 ],
+					"patching_rect" : [ 1144.44431483745575, 532.098705172538757, 50.330497760108642, 47.843137502670288 ],
 					"presentation" : 1,
 					"presentation_rect" : [ 113.200739196774805, 251.366944762388584, 46.379627684070215, 46.812898291477097 ],
 					"rounded" : 100.0,
-					"text" : "Install",
+					"text" : "Update",
 					"textoncolor" : [ 0.0, 0.0, 0.0, 1.0 ],
 					"textovercolor" : [ 1.0, 1.0, 0.0, 1.0 ],
 					"usetextovercolor" : 1
@@ -412,7 +442,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 194.025424718856812, 927.613321661949158, 29.5, 20.0 ],
+					"patching_rect" : [ 191.0, 927.613321661949158, 29.5, 20.0 ],
 					"presentation" : 1,
 					"presentation_rect" : [ 117.944272127245085, 270.484356373548508, 34.0, 20.0 ],
 					"textcolor" : [ 0.0, 0.0, 0.0, 1.0 ],
@@ -541,7 +571,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 204.525424718856812, 891.132882366180411, 63.0, 22.0 ],
+					"patching_rect" : [ 201.5, 883.0, 63.0, 22.0 ],
 					"text" : "append %"
 				}
 
@@ -571,8 +601,7 @@
 					"patching_rect" : [ 624.434507071972007, 982.3980388331413, 127.0, 41.0 ],
 					"presentation" : 1,
 					"presentation_rect" : [ 56.816629242394555, 334.248179466176339, 159.056896060705213, 58.094017267227173 ],
-					"readonly" : 1,
-					"text" : "Successfully downloaded!"
+					"readonly" : 1
 				}
 
 			}
@@ -595,7 +624,6 @@
 					"fontsize" : 10.0,
 					"id" : "obj-6",
 					"keymode" : 1,
-					"linecount" : 2,
 					"maxclass" : "textedit",
 					"nosymquotes" : 1,
 					"numinlets" : 1,
@@ -604,10 +632,9 @@
 					"parameter_enable" : 0,
 					"patching_rect" : [ 663.049759626388436, 170.0, 127.0, 41.0 ],
 					"presentation" : 1,
-					"presentation_linecount" : 2,
 					"presentation_rect" : [ 56.816629242394555, 175.067110169911331, 159.147847592830715, 41.0 ],
 					"readonly" : 1,
-					"text" : "C:/Users/b-her/Desktop/wc.setup_wearing_sound/"
+					"text" : "C:/Users/b-her/Desktop/"
 				}
 
 			}
@@ -630,7 +657,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 116.456343412399292, 807.815415263175964, 29.5, 22.0 ],
+					"patching_rect" : [ 77.0, 812.0, 29.5, 22.0 ],
 					"text" : "set"
 				}
 
@@ -666,8 +693,8 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 307.0, 391.265695095062256, 70.0, 22.0 ],
-					"text" : "loadmess 0"
+					"patching_rect" : [ 307.0, 391.265695095062256, 98.0, 22.0 ],
+					"text" : "loadmess \"set 0\""
 				}
 
 			}
@@ -678,7 +705,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 208.082031736373892, 850.188297629356384, 29.5, 22.0 ],
+					"patching_rect" : [ 194.025424718856812, 807.815415263175964, 29.5, 22.0 ],
 					"text" : "100"
 				}
 
@@ -925,10 +952,10 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1252.446661353111267, 83.567896008491516, 319.0, 36.0 ],
+					"patching_rect" : [ 1252.446661353111267, 83.567896008491516, 319.0, 35.0 ],
 					"presentation" : 1,
 					"presentation_linecount" : 2,
-					"presentation_rect" : [ 473.631257297835077, 178.723856925964355, 319.0, 36.0 ],
+					"presentation_rect" : [ 473.631257297835077, 178.723856925964355, 319.0, 35.0 ],
 					"text" : "https://github.com/wearablecomputing/wearing_sound https://github.com/wearablecomputing/optical-pleat-sensor"
 				}
 
@@ -974,19 +1001,6 @@
 					"numoutlets" : 0,
 					"patching_rect" : [ 168.0, 409.0, 32.0, 22.0 ],
 					"text" : "print"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"id" : "obj-37",
-					"linecount" : 3,
-					"maxclass" : "message",
-					"numinlets" : 2,
-					"numoutlets" : 1,
-					"outlettype" : [ "" ],
-					"patching_rect" : [ 241.740000000000009, 141.0, 184.0, 50.0 ],
-					"text" : "setDir C:/Users/b-her/Desktop/wc.setup_wearing_sound/"
 				}
 
 			}
@@ -1436,13 +1450,6 @@
 			}
 , 			{
 				"patchline" : 				{
-					"destination" : [ "obj-1", 0 ],
-					"source" : [ "obj-37", 0 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
 					"destination" : [ "obj-114", 0 ],
 					"order" : 1,
 					"source" : [ "obj-42", 0 ]
@@ -1614,7 +1621,16 @@
 			}
 , 			{
 				"patchline" : 				{
+					"destination" : [ "obj-3", 0 ],
+					"order" : 1,
+					"source" : [ "obj-71", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
 					"destination" : [ "obj-54", 0 ],
+					"order" : 0,
 					"source" : [ "obj-71", 0 ]
 				}
 
@@ -1801,7 +1817,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-4", 1 ],
-					"order" : 0,
+					"order" : 1,
 					"source" : [ "obj-95", 1 ]
 				}
 
@@ -1817,7 +1833,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-5", 0 ],
-					"order" : 1,
+					"order" : 0,
 					"source" : [ "obj-95", 1 ]
 				}
 
@@ -1865,7 +1881,7 @@
 			}
 , 			{
 				"name" : "setup.js",
-				"bootpath" : "~/Desktop/wc.setup_wearing_sound",
+				"bootpath" : "~/Desktop/wearing_sound_setup",
 				"patcherrelativepath" : ".",
 				"type" : "TEXT",
 				"implicit" : 1
