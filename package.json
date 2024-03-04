@@ -1,0 +1,15 @@
+{
+  "name": "wc.setup_wearing_sound",
+  "version": "1.0.0",
+  "description": "",
+  "main": "setup.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "simple-git": "^3.22.0"
+  }
+}
