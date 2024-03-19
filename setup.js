@@ -1,135 +1,159 @@
-const Max = require('max-api'); // Import Max API
+const Max = require('max-api');
 const path = require('node:path');
-const simpleGit = require('simple-git'); // Import simple-git library
-const fs = require('fs');
+const simpleGit = require('simple-git');
+const fs = require('fs').promises;
 
-const repoFolderName = 'repositories'; // Name of the folder where repositories will be cloned
+let repos = [];
+const configPath = './config.json';
+const repoFolder = 'repositories';
+let directory = null;
 
-let directory;
-let repos = {}; // Changed from repoUrls array to repos dictionary
-
-// Function to read a json file and set repos from the json
-function readJsonFile(file) {
-    let json = JSON.parse(fs.readFileSync(file, 'utf8'));
-    json.forEach(item => {
-        repos[item.repoUrl] = item.branch; // Store repoUrl as key and branch as value
-    });
-    Max.post('Repos: ' + JSON.stringify(repos));
-}
-
-readJsonFile('config.json');
-
-// Function to check if repositories already exist in the specified directory
-function checkReposExist(dir) {
-    setDirectory(dir);
-    Max.post('Checking repositories in ' + directory + '...');
-
+async function checkRepos() {
     if (!directory) {
         Max.outlet('error', 'Directory is not set. Please set the directory first.');
         return;
     }
 
-    Object.keys(repos).forEach(repoUrl => { // Iterate over dictionary keys (repoUrls)
-        Max.post("In loop");
-        const repoName = new URL(repoUrl).pathname.split('/').pop().replace('.git', '');
-        const repoDirectory = path.join(directory, repoFolderName, repoName);
+    const missingRepos = [];
+    const fullPath = path.join(directory, repoFolder);
 
-        // Check if the repository directory exists
-        if (fs.existsSync(repoDirectory)) {
-            Max.outlet('info', `Repository ${repoName} already exists in ${repoDirectory}.`);
-            Max.outlet('info', 'status', 'pull');
-        } else {
-            Max.outlet('info', `Repository ${repoName} does not exist and can be cloned.`);
-            Max.outlet('info', 'status', 'clone');
+    for (const { repoUrl } of repos) {
+        const repoName = new URL(repoUrl).pathname.split('/').pop().replace('.git', '');
+        const repoPath = path.join(fullPath, repoName);
+
+        try {
+            await fs.access(path.join(repoPath, '.git'));
+            Max.post(`Repository ${repoName} exists.`);
+        } catch (error) {
+            missingRepos.push(repoName);
+            Max.post(`Repository ${repoName} does not exist.`);
         }
-    });
+    }
+
+    if (missingRepos.length > 0) {
+        Max.outlet('missingRepos', JSON.stringify(missingRepos));
+        Max.post(`Missing repositories: ${missingRepos.join(', ')}. Consider cloning.`);
+        Max.outlet('info', 'status', 'clone')
+    } else {
+        Max.post('All specified repositories exist.');
+        Max.outlet('info', 'All repositories are present. Consider pulling updates with the "pull" command.');
+        Max.outlet('info', 'status', 'pull')
+    }
 }
+
+
+async function readAndSetReposFromJson() {
+    try {
+        const data = await fs.readFile(configPath, 'utf8');
+        repos = JSON.parse(data).map(({ repoUrl, branch }) => ({ repoUrl, branch }));
+        Max.post(`Repositories set from JSON: ${JSON.stringify(repos)}`);
+    } catch (error) {
+        Max.post(`Error reading JSON: ${error.message}`);
+    }
+}
+
+readAndSetReposFromJson();
 
 function setDirectory(dir) {
     directory = dir;
-    Max.outlet('success', 'Directory changed to ' + directory);
-    Max.post('Directory changed to ' + directory);
+    Max.post(`Directory changed to ${directory}`);
 }
 
-Max.addHandler('checkRepos', (folderPath) => {
-    Max.post('Checking repositories in ' + folderPath + '...');
-    checkReposExist(folderPath);
-});
+async function cloneRepository(repoUrl, branch, repoDirectory) {
+    await fs.mkdir(repoDirectory, { recursive: true });
 
-Max.addHandler('setDirectory', (dir) => {
+    const git = simpleGit({
+        progress({ method, stage, progress }) {
+            if (stage == "receiving") {
+
+                Max.outlet('clone', 'progress', progress);
+            }
+        },
+    });
+
+    Max.post("RepoDirectory: " + repoDirectory)
+
+    try {
+        // create folder
+        await git.clone(repoUrl, repoDirectory, ['--recurse-submodules']);
+        if (branch && branch !== 'main') {
+            await git.cwd(repoDirectory);
+            await git.checkout(branch);
+        }
+        Max.post(`Repository ${repoUrl} cloned successfully to ${repoDirectory}.`);
+    } catch (error) {
+        throw new Error(`Cloning failed for ${repoUrl}: ${error.message}`);
+    }
+}
+
+async function cloneRepositories() {
+    if (!directory) {
+        Max.outlet('error', 'Directory is not set. Use "setDir [path]" to set directory.');
+        return;
+    }
+
+    Max.post(`Starting cloning process for repositories to ${directory}/${repoFolder}`);
+    for (const { repoUrl, branch } of repos) {
+        const repoName = new URL(repoUrl).pathname.split('/').pop().replace('.git', '');
+        const repoDirectory = path.join(directory, repoFolder, repoName);
+
+        try {
+            await cloneRepository(repoUrl, branch, repoDirectory);
+        } catch (error) {
+            Max.outlet('error', error.message);
+        }
+    }
+    Max.post('Cloning process completed.');
+}
+
+async function pullRepository(repoUrl, branch, repoDirectory) {
+    const git = simpleGit(repoDirectory);
+
+    try {
+        await git.pull('origin', branch);
+        Max.post(`Repository ${repoUrl} pulled successfully in ${repoDirectory}.`);
+    } catch (error) {
+        throw new Error(`Pulling failed for ${repoUrl}: ${error.message}`);
+    }
+}
+
+async function pullRepositories() {
+    if (!directory) {
+        Max.outlet('error', 'Directory is not set. Use "setDir [path]" to set directory.');
+        return;
+    }
+
+    Max.post(`Starting pull process for repositories in ${directory}/${repoFolder}`);
+    for (const { repoUrl, branch } of repos) {
+        const repoName = new URL(repoUrl).pathname.split('/').pop().replace('.git', '');
+        const repoDirectory = path.join(directory, repoFolder, repoName);
+
+        try {
+            await pullRepository(repoUrl, branch, repoDirectory);
+        } catch (error) {
+            Max.outlet('error', error.message);
+        }
+    }
+    Max.post('Pull process completed.');
+}
+
+// Max handlers
+Max.addHandler('setDir', (dir) => {
     setDirectory(dir);
 });
 
-
-// Function to clone repositories
-function cloneRepos(dir) {
-    Max.post('Cloning repositories in ' + directory + '...');
-
-
-    if (!directory) {
-        Max.outlet('error', 'Directory is not set. Please set the directory first.');
-        return;
-    }
-
-    Object.keys(repos).forEach(repoUrl => { // Iterate over dictionary keys (repoUrls)
-        const repoName = new URL(repoUrl).pathname.split('/').pop().replace('.git', '');
-        const repoDirectory = path.join(directory, repoFolderName, repoName);
-
-        // Check if the repository directory exists
-        if (fs.existsSync(repoDirectory)) {
-            Max.outlet('info', `Repository ${repoName} already exists in ${repoDirectory}.`);
-            Max.outlet('info', 'status', 'pull');
-            git
-        } else {
-            git.clone(repoUrl, repoDirectory, (err, data) => {
-                if (err) {
-                    Max.outlet('error', `Error cloning repository ${repoName}: ${err}`);
-                } else {
-                    git.checkoutLocalBranch(repos[repoUrl], (err, data) => {
-                        if (err) {
-                            Max.outlet('error', `Error checking out branch ${repos[repoUrl]}: ${err}`);
-                        } else {
-                            Max.outlet('success', `Branch ${repoName} checked out successfully.`);
-                        }
-                    });
-                    Max.outlet('success', `Repository ${repoName} cloned successfully.`);
-                }
-            });
-            Max.outlet('info', `Repository ${repoName} does not exist and can be cloned.`);
-            Max.outlet('info', 'status', 'clone');
-        }
-    });
-}
-
-Max.addHandler('clone', (folderPath) => {
-    cloneRepos(folderPath);
+Max.addHandler('setReposFromJson', async () => {
+    await readAndSetReposFromJson();
 });
 
-// Function to pull repositories
-function pullRepos(dir) {
-    Max.post('Pulling repositories in ' + directory + '...');
-
-    if (!directory) {
-        Max.outlet('error', 'Directory is not set. Please set the directory first.');
-        return;
-    }
-
-    Object.keys(repos).forEach(repoUrl => { // Iterate over dictionary keys (repoUrls)
-        const repoName = new URL(repoUrl).pathname.split('/').pop().replace('.git', '');
-        const repoDirectory = path.join(directory, repoFolderName, repoName);
-
-        // Check if the repository directory exists
-        if (fs.existsSync(repoDirectory)) {
-            Max.outlet('info', `Repository ${repoName} already exists in ${repoDirectory}.`);
-            Max.outlet('info', 'status', 'pull');
-        } else {
-            Max.outlet('info', `Repository ${repoName} does not exist and can be cloned.`);
-            Max.outlet('info', 'status', 'clone');
-        }
-    });
-}
-
-Max.addHandler('pull', (folderPath) => {
-    pullRepos(folderPath);
+Max.addHandler('clone', async () => {
+    await cloneRepositories();
 });
 
+Max.addHandler('pull', async () => {
+    await pullRepositories();
+});
+
+Max.addHandler('checkRepos', async () => {
+    await checkRepos();
+});
