@@ -7,6 +7,11 @@ let repos = [];
 const configPath = './config.json';
 const repoFolder = 'repositories';
 let directory = null;
+const missingRepos = [];
+
+function setButtonText(text) {
+    Max.outlet('js', 'setButtonText', text);
+}
 
 async function checkRepos() {
     if (!directory) {
@@ -14,9 +19,8 @@ async function checkRepos() {
         return;
     }
 
-    const missingRepos = [];
     const fullPath = path.join(directory, repoFolder);
-
+    
     for (const { repoUrl } of repos) {
         const repoName = new URL(repoUrl).pathname.split('/').pop().replace('.git', '');
         const repoPath = path.join(fullPath, repoName);
@@ -57,6 +61,7 @@ readAndSetReposFromJson();
 function setDirectory(dir) {
     directory = dir;
     Max.post(`Directory changed to ${directory}`);
+    checkRepos();
 }
 
 async function cloneRepository(repoUrl, branch, repoDirectory) {
@@ -67,11 +72,10 @@ async function cloneRepository(repoUrl, branch, repoDirectory) {
             if (stage == "receiving") {
 
                 Max.outlet('clone', 'progress', progress);
+                Max.outlet('js', 'setPrimaryWheelValue', progress);
             }
         },
     });
-
-    Max.post("RepoDirectory: " + repoDirectory)
 
     try {
         // create folder
@@ -91,9 +95,14 @@ async function cloneRepositories() {
         Max.outlet('error', 'Directory is not set. Use "setDir [path]" to set directory.');
         return;
     }
+    // Max.post("Missing Repos: " + missingRepos.length)
 
     Max.post(`Starting cloning process for repositories to ${directory}/${repoFolder}`);
+    setButtonText("");
+    Max.outlet('js', 'toggleLoadingWheel', true);
     for (const { repoUrl, branch } of repos) {
+        
+        Max.post("RepoUrl: " + repoUrl)
         const repoName = new URL(repoUrl).pathname.split('/').pop().replace('.git', '');
         const repoDirectory = path.join(directory, repoFolder, repoName);
 
@@ -104,6 +113,9 @@ async function cloneRepositories() {
         }
     }
     Max.post('Cloning process completed.');
+    Max.outlet('js', 'toggleLoadingWheel', false);
+
+    setButtonText("Update");
 }
 
 async function pullRepository(repoUrl, branch, repoDirectory) {

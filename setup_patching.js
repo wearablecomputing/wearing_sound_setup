@@ -2,37 +2,30 @@ inlets = 5;
 outlets = 5;
 patcher = this.patcher;
 
-clonePullButton = patcher.getnamed("button");
+const clonePullButton = patcher.getnamed("button");
+const primaryWheel = patcher.getnamed("primaryWheel");
+const secondaryWheel = patcher.getnamed("secondaryWheel");
+const loadingWheelToggle = patcher.getnamed("loadingWheelToggle");
+const progressText = patcher.getnamed("progressText");
+const stageText = patcher.getnamed("stageText");
+const successNeedleColor = [0.5, 1., 0.5, 1.];
+const failureNeedleColor = [1., 0.5, 0.5, 1.];
+const progressNeedleColor = [0.42, 0.79, 0.85, 1.];
 
-primaryWheel = patcher.getnamed("primaryWheel");
-secondaryWheel = patcher.getnamed("secondaryWheel");
-loadingWheelToggle = patcher.getnamed("loadingWheelToggle");
-progressText = patcher.getnamed("progressText");
-stageText = patcher.getnamed("stageText");
-
-successNeedleColor = [0.5, 1., 0.5, 1.];
-failureNeedleColor = [1., 0.5, 0.5, 1.];
-progressNeedleColor = [0.42, 0.79, 0.85, 1.];
+var wheelToggleState = false;
 
 clonePullButton.message("text", "lol");
 
 function start() {
     setPrimaryWheelValue(0);
-    setSecondaryWheel(0);
+    setSecondaryWheelValue(0);
     progressText.message("set");
     setButtonText("Install");
 }
 
-function setSecondaryWheel(state) {
+function setSecondaryWheelValue(value) {
     // switch case
-    switch (state) {
-        case 0:
-            secondaryWheel.message("set", 0);
-            break;
-        case 1:
-            secondaryWheel.message("set", 100);
-            break;
-    }
+    secondaryWheel.message("set", value);
 }
 
 function setPrimaryWheelValue(value) {
@@ -44,7 +37,22 @@ function setPrimaryWheelValue(value) {
 
 function setButtonText(text) {
     clonePullButton.message("text", text);
+
+    if(text !== ""){
+        progressText = "";
+    }
 }
+
+function toggleLoadingWheel(state) {
+    loadingWheelToggle.message("set", state);
+    loadingWheelToggle.message("outputvalue");
+
+    if(state == false){
+        setSecondaryWheelValue(0);
+    }
+}
+
+
 
 
 
