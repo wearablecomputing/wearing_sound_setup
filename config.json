@@ -1,10 +1,17 @@
-[
+{
+  "repos": [
     {
-        "repoUrl": "https://github.com/wearablecomputing/stitch_data",
-        "branch": "main"
+      "repoUrl": "https://github.com/wearablecomputing/wearing_sound",
+      "branch": "main"
     },
-    {
-        "repoUrl": "https://github.com/wearablecomputing/optical-pleat-sensor",
-        "branch": "main"
-    }
-]
+		{ "repoUrl": "https://github.com/motiondescriptors/modosc",
+		  "branch": "main"
+		}
+  ],
+
+  "releases": [
+    "https://github.com/wearablecomputing/flash/",
+		"https://github.com/federicoVisi/GIMLeT/",
+		"https://github.com/CNMAT/CNMAT-odot/"
+  ]
+}
