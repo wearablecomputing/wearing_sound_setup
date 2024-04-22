@@ -3,7 +3,7 @@ const path = require('node:path');
 const simpleGit = require('simple-git');
 const fs = require('fs');
 const fsPromises = fs.promises;
-const fetch = require('node-fetch');
+const axios = require('axios');
 const decompress = require('decompress');
 const os = require('os');
 const { get } = require('node:http');
@@ -144,79 +144,69 @@ async function downloadLatestRelease(repoUrl) {
     const organization = repo[1];
 
     const apiURL = `https://api.github.com/repos/${organization}/${repoName}/releases/latest`;
-    Max.post(apiURL);
+    try {
+        const response = await axios.get(apiURL);
 
-    const response = await fetch(apiURL);
-    const releaseData = await response.json();
+        // Extracting release data
+        const releaseData = response.data;
 
-    if (response.status !== 200) {
-        Max.post(`Failed to fetch release info for ${repoName}: ${response.statusText}`);
-        return;
-    }
+        Max.post(`Found release for ${repoName}: ${releaseData.tag_name}`);
 
-    Max.outlet('js', 'setInfoText', `Downloading release for ${repoName}`);
+        // Determine the platform
+        const platform = process.platform.includes('win32') ? 'Windows' : 'macOS';
 
-    // Determine the platform
-    const platform = process.platform.includes('win32') ? 'Windows' : 'macOS';
+        // Try to find a platform-specific asset; if none, use the first asset in the array
+        let platformAsset = releaseData.assets.find(asset => asset.name.includes(platform)) || releaseData.assets[0];
 
-    // Try to find a platform-specific asset; if none, use the first asset in the array
-    let platformAsset = releaseData.assets.find(asset => asset.name.includes(platform)) || releaseData.assets[0];
+        if (!platformAsset) {
+            Max.post(`No assets found for the latest release of ${repoName}. Attempting to download source code zip.`);
+            platformAsset = {
+                browser_download_url: releaseData.zipball_url,
+                name: `${repoName}-${releaseData.tag_name}.zip`
+            };
+        }
 
-    if (!platformAsset) {
-        Max.post(`No assets found for the latest release of ${repoName}. Attempting to download source code zip.`);
-        platformAsset = {
-            browser_download_url: releaseData.zipball_url,
-            name: `${repoName}-${releaseData.tag_name}.zip`
-        };
-    }
+        Max.post(`Downloading asset: ${platformAsset.name}`);
+        const downloadedReleasesPath = path.join(directory, folderName, 'releases', repoName);
+        await fs.promises.mkdir(downloadedReleasesPath, { recursive: true });
 
-    Max.post(`Found asset or source zip: ${platformAsset.name}`);
-
-    const downloadedReleasesPath = path.join(directory, folderName, 'releases', repoName);
-    await fsPromises.mkdir(downloadedReleasesPath, { recursive: true });
-
-    const response2 = await fetch(platformAsset.browser_download_url);
-    if (!response2.ok) {
-        Max.post(`Failed to download the asset: ${response2.statusText}`);
-        Max.outlet('js', 'setInfoText', `Failed to download release for ${repoName}`);
-        return;
-    }
-
-    const contentLength = response2.headers.get('Content-Length');
-    let receivedLength = 0; // This will accumulate the number of bytes received
-
-    const assetFileName = platformAsset.name;
-    const releasePath = path.join(downloadedReleasesPath, assetFileName);
-    const fileStream = fs.createWriteStream(releasePath);
-
-    response2.body.on('data', (chunk) => {
-        receivedLength += chunk.length;
-
-        // convert to percent
-        const progress = Math.round((receivedLength / contentLength) * 100);
-        Max.outlet('js', 'setPrimaryWheelValue', progress);
-    });
-
-    return new Promise((resolve, reject) => {
-        response2.body.pipe(fileStream);
-        response2.body.on('error', (err) => {
-            reject(err);
+        // Download the release asset or source zip
+        const { data, headers } = await axios({
+            method: 'get',
+            url: platformAsset.browser_download_url,
+            responseType: 'stream'
         });
-        fileStream.on('finish', () => {
-            // unzip the file
-            decompress(releasePath, downloadedReleasesPath).then(() => {
-                Max.post(`Downloaded and extracted release for ${repoName} from ${platformAsset.browser_download_url}.`);
-                resolve();
-            }).catch((err) => {
-                reject(err);
+
+        const releasePath = path.join(downloadedReleasesPath, platformAsset.name);
+        const fileStream = fs.createWriteStream(releasePath);
+        const contentLength = headers['content-length'];
+        let receivedLength = 0; // This will accumulate the number of bytes received
+
+        data.on('data', (chunk) => {
+            receivedLength += chunk.length;
+            const progress = Math.round((receivedLength / contentLength) * 100);
+            Max.outlet('js', 'setPrimaryWheelValue', progress);
+        });
+
+        data.pipe(fileStream);
+
+        return new Promise((resolve, reject) => {
+            fileStream.on('finish', async () => {
+                Max.post(`Asset downloaded: ${platformAsset.name}`);
+                try {
+                    await decompress(releasePath, downloadedReleasesPath);
+                    Max.post(`Downloaded and extracted release for ${repoName}.`);
+                    fs.unlinkSync(releasePath); // Delete the zip file after extraction
+                    resolve();
+                } catch (err) {
+                    reject(err);
+                }
             });
-            // delete zip
-            fs.unlinkSync(releasePath);
-            Max.post(`Downloaded release for ${repoName} from ${platformAsset.browser_download_url}.`);
-            Max.outlet('js', 'setInfoText', `Downloaded release for ${repoName}`);
-            resolve();
+            data.on('error', reject);
         });
-    });
+    } catch (error) {
+        Max.post(`Failed to fetch release info for ${repoName}: ${error.message}`);
+    }
 }
 
 

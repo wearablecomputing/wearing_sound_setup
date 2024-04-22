@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 42.0, 85.0, 1537.0, 921.0 ],
+		"rect" : [ 42.0, 85.0, 1537.0, 905.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -380,6 +380,7 @@
 					"presentation" : 1,
 					"presentation_rect" : [ 56.816629242394555, 334.248179466176339, 159.056896060705213, 58.094017267227173 ],
 					"readonly" : 1,
+					"text" : "Success!",
 					"varname" : "infoText"
 				}
 
@@ -638,7 +639,7 @@
 					"presentation" : 1,
 					"presentation_rect" : [ 113.200739196774805, 251.366944762388584, 46.379627684070215, 46.812898291477097 ],
 					"rounded" : 100.0,
-					"text" : "Install",
+					"text" : "Update",
 					"textoncolor" : [ 0.0, 0.0, 0.0, 1.0 ],
 					"textovercolor" : [ 1.0, 1.0, 0.0, 1.0 ],
 					"usetextovercolor" : 1,
@@ -739,6 +740,7 @@
 					"fontsize" : 10.0,
 					"id" : "obj-6",
 					"keymode" : 1,
+					"linecount" : 2,
 					"maxclass" : "textedit",
 					"nosymquotes" : 1,
 					"numinlets" : 1,
@@ -747,8 +749,10 @@
 					"parameter_enable" : 0,
 					"patching_rect" : [ 663.049759626388436, 170.0, 127.0, 41.0 ],
 					"presentation" : 1,
+					"presentation_linecount" : 2,
 					"presentation_rect" : [ 56.816629242394555, 175.067110169911331, 159.147847592830715, 41.0 ],
-					"readonly" : 1
+					"readonly" : 1,
+					"text" : "C:\\Users\\b-her\\Documents\\Max 8\\Packages"
 				}
 
 			}
@@ -877,6 +881,8 @@
 					"saved_object_attributes" : 					{
 						"autostart" : 1,
 						"defer" : 0,
+						"node_bin_path" : "",
+						"npm_bin_path" : "",
 						"watch" : 1
 					}
 ,
