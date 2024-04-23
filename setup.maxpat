@@ -3,16 +3,16 @@
 		"fileversion" : 1,
 		"appversion" : 		{
 			"major" : 8,
-			"minor" : 5,
-			"revision" : 6,
+			"minor" : 6,
+			"revision" : 2,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 34.0, 85.0, 1537.0, 905.0 ],
+		"rect" : [ 34.0, 100.0, 1444.0, 848.0 ],
 		"bglocked" : 0,
-		"openinpresentation" : 0,
+		"openinpresentation" : 1,
 		"default_fontsize" : 12.0,
 		"default_fontface" : 0,
 		"default_fontname" : "Arial",
@@ -40,12 +40,125 @@
 		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
+					"id" : "obj-4",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "bang" ],
+					"patching_rect" : [ 1026.0, 767.753892034292221, 48.0, 22.0 ],
+					"text" : "del 500"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-67",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 5,
+					"outlettype" : [ "bang", "bang", "bang", "bang", "bang" ],
+					"patching_rect" : [ 1052.0, 719.0, 62.0, 22.0 ],
+					"text" : "t b b b b b"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-66",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 1052.0, 688.0, 54.0, 22.0 ],
+					"text" : "deferlow"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-65",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "bang" ],
+					"patching_rect" : [ 1052.0, 655.0, 58.0, 22.0 ],
+					"text" : "loadbang"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-64",
+					"maxclass" : "message",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 1026.0, 856.181818008422852, 188.0, 22.0 ],
+					"text" : "script connect to-js-route 0 myjs 0"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-61",
+					"maxclass" : "message",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 1221.0, 856.181818008422852, 183.0, 22.0 ],
+					"text" : "script connect to-js-msg 0 myjs 0"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-51",
+					"maxclass" : "message",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 1415.0, 856.181818008422852, 145.0, 22.0 ],
+					"text" : "script move myjs 750 900"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"fontname" : "Arial",
+					"fontsize" : 12.0,
+					"id" : "obj-16",
+					"maxclass" : "message",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 1574.0, 856.181818008422852, 235.0, 22.0 ],
+					"text" : "script newdefault myjs js setup_patching.js"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"fontname" : "Arial",
+					"fontsize" : 12.0,
+					"id" : "obj-9",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 2,
+					"outlettype" : [ "", "" ],
+					"patching_rect" : [ 1026.0, 946.0, 69.0, 22.0 ],
+					"save" : [ "#N", "thispatcher", ";", "#Q", "end", ";" ],
+					"text" : "thispatcher"
+				}
+
+			}
+, 			{
+				"box" : 				{
 					"id" : "obj-10",
 					"maxclass" : "newobj",
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 816.031543970108032, 697.635717613697011, 117.0, 22.0 ],
+					"patching_rect" : [ 816.0, 684.0, 117.0, 22.0 ],
 					"text" : "if $i1 == 0 then set 0"
 				}
 
@@ -166,8 +279,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 486.379913210868835, 907.765191674232483, 35.0, 22.0 ],
-					"text" : "clear"
+					"patching_rect" : [ 486.379913210868835, 907.765191674232483, 35.0, 22.0 ]
 				}
 
 			}
@@ -203,7 +315,8 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
 					"patching_rect" : [ 688.379870414733887, 808.612154375314731, 48.0, 22.0 ],
-					"text" : "route js"
+					"text" : "route js",
+					"varname" : "to-js-route"
 				}
 
 			}
@@ -215,24 +328,8 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 771.031543970108032, 808.612154375314731, 162.0, 22.0 ],
-					"text" : "setSecondaryWheelValue $1"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"id" : "obj-50",
-					"maxclass" : "newobj",
-					"numinlets" : 5,
-					"numoutlets" : 5,
-					"outlettype" : [ "", "", "", "", "" ],
-					"patching_rect" : [ 771.031543970108032, 885.478386759757996, 114.0, 22.0 ],
-					"saved_object_attributes" : 					{
-						"filename" : "setup_patching.js",
-						"parameter_enable" : 0
-					}
-,
-					"text" : "js setup_patching.js"
+					"text" : "setSecondaryWheelValue $1",
+					"varname" : "to-js-msg"
 				}
 
 			}
@@ -298,10 +395,10 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 1294.362623333930969, 695.079856841564151, 290.333331942558289, 89.0 ],
+					"patching_rect" : [ 1294.362623333930969, 695.079856841564151, 290.333331942558289, 87.0 ],
 					"presentation" : 1,
 					"presentation_linecount" : 6,
-					"presentation_rect" : [ 284.042551159858704, 318.405058978474074, 270.542222559452057, 89.0 ],
+					"presentation_rect" : [ 284.042551159858704, 318.405058978474074, 270.542222559452057, 87.0 ],
 					"text" : "- specify branch DONE\n- add folder to max search path\n- sort out bangs DONE\n- config file for repos DONE\n- default installation path DONE\n- function for downloading github release DONE"
 				}
 
@@ -388,7 +485,7 @@
 					"presentation" : 1,
 					"presentation_rect" : [ 113.200739196774805, 251.366944762388584, 46.379627684070215, 46.812898291477097 ],
 					"rounded" : 100.0,
-					"text" : "Update",
+					"text" : "Install",
 					"textoncolor" : [ 0.0, 0.0, 0.0, 1.0 ],
 					"textovercolor" : [ 1.0, 1.0, 0.0, 1.0 ],
 					"usetextovercolor" : 1,
@@ -483,7 +580,7 @@
 					"presentation_linecount" : 2,
 					"presentation_rect" : [ 56.816629242394555, 175.067110169911331, 159.147847592830715, 41.0 ],
 					"readonly" : 1,
-					"text" : "C:\\Users\\b-her\\Documents\\Max 8\\Packages"
+					"text" : "/Users/federicovisi/Documents/Max 8/Packages"
 				}
 
 			}
@@ -755,15 +852,15 @@
 			}
 , 			{
 				"patchline" : 				{
-					"destination" : [ "obj-1", 0 ],
-					"source" : [ "obj-17", 0 ]
+					"destination" : [ "obj-9", 0 ],
+					"source" : [ "obj-16", 0 ]
 				}
 
 			}
 , 			{
 				"patchline" : 				{
-					"destination" : [ "obj-50", 0 ],
-					"source" : [ "obj-18", 0 ]
+					"destination" : [ "obj-1", 0 ],
+					"source" : [ "obj-17", 0 ]
 				}
 
 			}
@@ -799,6 +896,13 @@
 				"patchline" : 				{
 					"destination" : [ "obj-37", 0 ],
 					"source" : [ "obj-39", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-57", 0 ],
+					"source" : [ "obj-4", 0 ]
 				}
 
 			}
@@ -845,6 +949,13 @@
 					"destination" : [ "obj-6", 0 ],
 					"order" : 0,
 					"source" : [ "obj-5", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-9", 0 ],
+					"source" : [ "obj-51", 0 ]
 				}
 
 			}
@@ -915,8 +1026,64 @@
 			}
 , 			{
 				"patchline" : 				{
-					"destination" : [ "obj-50", 0 ],
-					"source" : [ "obj-68", 0 ]
+					"destination" : [ "obj-9", 0 ],
+					"source" : [ "obj-61", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-9", 0 ],
+					"source" : [ "obj-64", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-66", 0 ],
+					"source" : [ "obj-65", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-67", 0 ],
+					"source" : [ "obj-66", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-16", 0 ],
+					"source" : [ "obj-67", 4 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-4", 0 ],
+					"source" : [ "obj-67", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-51", 0 ],
+					"source" : [ "obj-67", 3 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-61", 0 ],
+					"source" : [ "obj-67", 2 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-64", 0 ],
+					"source" : [ "obj-67", 1 ]
 				}
 
 			}
@@ -990,14 +1157,7 @@
 			}
 , 			{
 				"name" : "setup.js",
-				"bootpath" : "~/Desktop/WORK/2_WearableComputing/wc.setup_wearing_sound",
-				"patcherrelativepath" : ".",
-				"type" : "TEXT",
-				"implicit" : 1
-			}
-, 			{
-				"name" : "setup_patching.js",
-				"bootpath" : "~/Desktop/WORK/2_WearableComputing/wc.setup_wearing_sound",
+				"bootpath" : "~/Documents/git/wearing_sound_setup",
 				"patcherrelativepath" : ".",
 				"type" : "TEXT",
 				"implicit" : 1
