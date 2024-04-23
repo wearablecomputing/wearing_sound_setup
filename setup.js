@@ -120,46 +120,34 @@ async function checkIfReleaseDownloaded(repoName) {
 // Modified to check and download missing releases
 async function checkAndDownloadReleases() {
     for (const repoUrl of releases) {
-        Max.post("repoUrl: " + repoUrl)
-        // repoUrl looks like this https://github.com/wearablecomputing/flash/
         const repo = new URL(repoUrl).pathname.replace('.git', '').split('/');
-        const repoName = repo[2]
-        const organization = repo[1]
+        const repoName = repo[2];
 
-        Max.post('org: ' + organization + ' name: ' + repoName);
-
-        Max.post("Repo name: " + repoName);
-        const isDownloaded = await checkIfReleaseDownloaded(repoName);
-        if (!isDownloaded) {
-            await downloadLatestRelease(repoUrl);
-        } else {
-            Max.post(`Release for ${repoName} already downloaded.`);
+        const downloadedReleasesPath = path.join(packagePath, repoName);
+        try {
+            await fsPromises.access(downloadedReleasesPath);
+            Max.post(`Release for ${repoName} already downloaded in package folder.`);
+        } catch (error) {
+            Max.post(`Downloading release for ${repoName}.`);
+            await downloadLatestRelease(repoUrl, downloadedReleasesPath);
         }
     }
 }
 
-async function downloadLatestRelease(repoUrl) {
+
+async function downloadLatestRelease(repoUrl, downloadedReleasesPath) {
     const repo = new URL(repoUrl).pathname.replace('.git', '').split('/');
     const repoName = repo[2];
     const organization = repo[1];
-
     const apiURL = `https://api.github.com/repos/${organization}/${repoName}/releases/latest`;
+
     try {
         const response = await axios.get(apiURL);
-
-        // Extracting release data
         const releaseData = response.data;
-
-        Max.post(`Found release for ${repoName}: ${releaseData.tag_name}`);
-
-        // Determine the platform
         const platform = process.platform.includes('win32') ? 'Windows' : 'macOS';
-
-        // Try to find a platform-specific asset; if none, use the first asset in the array
         let platformAsset = releaseData.assets.find(asset => asset.name.includes(platform)) || releaseData.assets[0];
 
         if (!platformAsset) {
-            Max.post(`No assets found for the latest release of ${repoName}. Attempting to download source code zip.`);
             platformAsset = {
                 browser_download_url: releaseData.zipball_url,
                 name: `${repoName}-${releaseData.tag_name}.zip`
@@ -167,10 +155,8 @@ async function downloadLatestRelease(repoUrl) {
         }
 
         Max.post(`Downloading asset: ${platformAsset.name}`);
-        const downloadedReleasesPath = path.join(directory, folderName, 'releases', repoName);
-        await fs.promises.mkdir(downloadedReleasesPath, { recursive: true });
+        await fsPromises.mkdir(downloadedReleasesPath, { recursive: true });
 
-        // Download the release asset or source zip
         const { data, headers } = await axios({
             method: 'get',
             url: platformAsset.browser_download_url,
@@ -180,7 +166,7 @@ async function downloadLatestRelease(repoUrl) {
         const releasePath = path.join(downloadedReleasesPath, platformAsset.name);
         const fileStream = fs.createWriteStream(releasePath);
         const contentLength = headers['content-length'];
-        let receivedLength = 0; // This will accumulate the number of bytes received
+        let receivedLength = 0;
 
         data.on('data', (chunk) => {
             receivedLength += chunk.length;
@@ -208,8 +194,6 @@ async function downloadLatestRelease(repoUrl) {
         Max.post(`Failed to fetch release info for ${repoName}: ${error.message}`);
     }
 }
-
-
 
 async function cloneRepository(repoUrl, branch, repoDirectory) {
     await fsPromises.mkdir(repoDirectory, { recursive: true });
