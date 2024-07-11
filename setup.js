@@ -257,7 +257,7 @@ async function cloneRepositories() {
         }
     }
 
-    await checkAndDownloadReleases();
+    //await checkAndDownloadReleases();
 
     Max.outlet('js', 'toggleLoadingWheel', false);
     Max.outlet('js', 'setPrimaryWheelValue', 100);
@@ -331,10 +331,12 @@ Max.addHandler('setReposFromJson', async () => {
 
 Max.addHandler('Install', async () => {
     await cloneRepositories();
+	await checkAndDownloadReleases();
 });
 
 Max.addHandler('Update', async () => {
     await pullRepositories();
+	await checkAndDownloadReleases();
 });
 
 Max.addHandler('checkRepos', async () => {
