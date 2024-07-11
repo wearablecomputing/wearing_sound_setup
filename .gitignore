@@ -3,3 +3,5 @@
 # ignore .log files
 *.log
 package-lock.json
+
+.DS_Store
